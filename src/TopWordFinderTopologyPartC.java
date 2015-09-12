@@ -45,11 +45,15 @@ public class TopWordFinderTopologyPartC {
 
     ------------------------------------------------- */
 
-    builder.setSpout("spout", new FileReaderSpout(args[0]), 1);
+    FileReaderSpout fs = new FileReaderSpout();
+    fs.fileName = args[0];
+    
+    builder.setSpout("spout", fs, 1);
     builder.setBolt("split", new SplitSentenceBolt(), 8).shuffleGrouping("spout");
-    builder.setBolt("normalize", new NormalizerBolt(), 8).fieldsGrouping("split", new Fields("word"));
+    builder.setBolt("normalize", new NormalizerBolt(),8).fieldsGrouping("split", new Fields("word"));
     builder.setBolt("count", new WordCountBolt(), 12).fieldsGrouping("normalize", new Fields("word"));
    
+
     config.setMaxTaskParallelism(3);
 
     LocalCluster cluster = new LocalCluster();
