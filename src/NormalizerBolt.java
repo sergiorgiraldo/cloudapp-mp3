@@ -43,7 +43,7 @@ public class NormalizerBolt extends BaseBasicBolt {
   
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
 
-    declarer.declare(new Fields("norm&filtered-word"));
+    declarer.declare(new Fields("word"));
 
   }
 }
