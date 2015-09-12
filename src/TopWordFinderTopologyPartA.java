@@ -1,4 +1,6 @@
 
+
+
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
@@ -15,7 +17,10 @@ import backtype.storm.tuple.Values;
  */
 public class TopWordFinderTopologyPartA {
 
+  private static final int N = 10;
+
   public static void main(String[] args) throws Exception {
+
 
     TopologyBuilder builder = new TopologyBuilder();
 
@@ -36,7 +41,12 @@ public class TopWordFinderTopologyPartA {
 
 
     ------------------------------------------------- */
+    builder.setSpout("spout", new RandomSentenceSpout(), 5);
+    
+    builder.setBolt("split", new SplitSentenceBolt(), 8).shuffleGrouping("spout");
+    builder.setBolt("count", new WordCountBolt(), 12).fieldsGrouping("split", new Fields("word"));
 
+    
 
     config.setMaxTaskParallelism(3);
 

@@ -1,5 +1,7 @@
 
 
+
+
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
@@ -16,13 +18,12 @@ public class RandomSentenceSpout extends BaseRichSpout {
   Random _rand;
 
 
-  @Override
   public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
     _collector = collector;
     _rand = new Random();
   }
 
-  @Override
+
   public void nextTuple() {
     Utils.sleep(100);
     String[] sentences = new String[]{ "the cow jumped over the moon", "an apple a day keeps the doctor away",
@@ -31,15 +32,15 @@ public class RandomSentenceSpout extends BaseRichSpout {
     _collector.emit(new Values(sentence));
   }
 
-  @Override
+  
   public void ack(Object id) {
   }
 
-  @Override
+  
   public void fail(Object id) {
   }
 
-  @Override
+  
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
     declarer.declare(new Fields("word"));
   }

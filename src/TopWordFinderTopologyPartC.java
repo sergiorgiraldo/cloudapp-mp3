@@ -1,4 +1,6 @@
 
+
+
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
@@ -15,6 +17,8 @@ import backtype.storm.tuple.Values;
  * lower case and common words are removed, and then count the number of words.
  */
 public class TopWordFinderTopologyPartC {
+
+  private static final int N = 10;
 
   public static void main(String[] args) throws Exception {
 
@@ -40,7 +44,14 @@ public class TopWordFinderTopologyPartC {
 
 
     ------------------------------------------------- */
-
+    FileReaderSpout fs = new FileReaderSpout();
+    fs.fileName = args[0];
+    
+    builder.setSpout("spout", fs, 5);
+    builder.setBolt("split", new SplitSentenceBolt(), 8).shuffleGrouping("spout");
+    builder.setBolt("normalize", new NormalizerBolt(),12).fieldsGrouping("split", new Fields("word"));
+    builder.setBolt("count", new WordCountBolt(), 16).fieldsGrouping("normalize", new Fields("norm&filtered-word"));
+   
 
     config.setMaxTaskParallelism(3);
 

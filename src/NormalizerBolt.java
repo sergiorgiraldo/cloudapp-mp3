@@ -1,3 +1,5 @@
+
+
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -18,24 +20,30 @@ public class NormalizerBolt extends BaseBasicBolt {
       "by", "from", "they", "we", "her", "or", "will", "my", "one", "all", "s", "if",
       "any", "our", "may", "your", "these", "d" , " ", "me" , "so" , "what" , "him" );
 
-  @Override
+  
   public void execute(Tuple tuple, BasicOutputCollector collector) {
 
     /*
     ----------------------TODO-----------------------
+    
     Task:
      1. make the words all lower case
      2. remove the common words
 
     ------------------------------------------------- */
-
+	 
+	    
+	  String tuple_lowered = tuple.getString(0).toLowerCase().trim();
+	  if (!commonWords.contains(tuple_lowered)) {
+		  collector.emit(new Values (tuple_lowered));
+	  }
 
   }
 
-  @Override
+  
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
 
-    declarer.declare(new Fields("word"));
+    declarer.declare(new Fields("norm&filtered-word"));
 
   }
 }

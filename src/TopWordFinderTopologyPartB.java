@@ -1,4 +1,6 @@
 
+
+
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
@@ -15,14 +17,16 @@ import backtype.storm.tuple.Values;
  */
 public class TopWordFinderTopologyPartB {
 
+  private static final int N = 10;
+
   public static void main(String[] args) throws Exception {
 
 
     TopologyBuilder builder = new TopologyBuilder();
-
+    
     Config config = new Config();
     config.setDebug(true);
-
+    
 
     /*
     ----------------------TODO-----------------------
@@ -37,11 +41,17 @@ public class TopWordFinderTopologyPartB {
 
 
     ------------------------------------------------- */
-
+    FileReaderSpout fs = new FileReaderSpout();
+    fs.fileName = args[0];
+    
+    builder.setSpout("spout", fs, 5);
+    builder.setBolt("split", new SplitSentenceBolt(), 8).shuffleGrouping("spout");
+    builder.setBolt("count", new WordCountBolt(), 12).fieldsGrouping("split", new Fields("word"));
 
     config.setMaxTaskParallelism(3);
-
+    
     LocalCluster cluster = new LocalCluster();
+    
     cluster.submitTopology("word-count", config, builder.createTopology());
 
     //wait for 2 minutes and then kill the job
